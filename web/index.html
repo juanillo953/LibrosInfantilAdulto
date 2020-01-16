@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script>
+            var opcion =0;
+            function inicializar(){
+                if(window.XMLHttpRequest){
+
+                    return new XMLHttpRequest;
+                }
+                else if(window.ActiveXObject){
+                    return new ActiveXObject("Microsoft.XMLHTTP");
+                }
+
+            }
+            function obtenerDatos(numero){
+                opcion = numero;
+                peticion_http = inicializar();
+                if(peticion_http){
+                    peticion_http.onreadystatechange = procesaRespuesta;
+                    peticion_http.open('GET','libros.xml',true);
+                    peticion_http.send(null);
+                }
+            }
+            function procesaRespuesta(){
+                console.log(opcion);
+                if(peticion_http.readyState == 4){
+                    if(peticion_http.status == 200 && opcion == 1){
+                        var documentoXML = peticion_http.responseXML;
+                        var libros = documentoXML.getElementsByTagName("Titulo");
+                        var txt = "Todos los libros<br>";
+                        for(contador=0;contador<libros.length;contador++){
+                            txt+=libros[contador].firstChild.nodeValue+"<br>";
+                        }
+                        document.getElementById("contenedor").innerHTML=txt;
+                    }
+                    else if (peticion_http.status==200 && opcion == 2){
+                        var documentoXML = peticion_http.responseXML;
+                        var libros = documentoXML.getElementsByTagName("Infantil");
+                        var librosInfantil = libros[0].getElementsByTagName("Titulo");
+                        var txt = "Libros infantil<br>";
+                        for(contador=0;contador<librosInfantil.length;contador++){
+                            txt+=librosInfantil[contador].firstChild.nodeValue+"<br>";
+                            
+                        }
+                        document.getElementById("contenedor").innerHTML=txt;
+                    }
+                    else if(peticion_http.status==200 && opcion == 3) {
+                        var documentoXML = peticion_http.responseXML;
+                        var libros = documentoXML.getElementsByTagName("Adultos");
+                        var librosAdulto = libros[0].getElementsByTagName("Titulo");
+                        var txt = "Libros adulto:<br>";
+                        for(contador=0;contador<librosAdulto.length;contador++){
+                            txt+=librosAdulto[contador].firstChild.nodeValue+"<br>";
+                            
+                        }
+                        document.getElementById("contenedor").innerHTML=txt;
+                    }
+                }
+
+            }
+        </script>
+    </head>
+    <body>
+       <h1>Leer información del archivo XML.</h1>
+       <input type="button" value="Ver todos los libros" onclick="obtenerDatos('1')"><br>
+       <input type="button" value="Ver solo los libros infantiles" onclick="obtenerDatos('2')"><br>
+       <input type="button" value="Ver solo los libros de adultos" onclick="obtenerDatos('3')"><br>
+       <div id="contenedor" name="contenedor"></div>
+    </body>
+</html>
